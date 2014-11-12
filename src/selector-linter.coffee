@@ -11,6 +11,15 @@ class SelectorLinter
   constructor: ->
     @deprecations = {}
 
+  checkKeymap: (keymap, metadata) ->
+    for selector of keymap
+      @check(selector, metadata)
+
+  checkStylesheet: (css, metadata) ->
+    for line in css.split("\n")
+      unless line.indexOf(";") > 0
+        @check(line, metadata)
+
   check: (selector, metadata) ->
     for klass, tag of DEPRECATED_CLASSES
       if @selectorHasClass(selector, klass)
@@ -24,9 +33,13 @@ class SelectorLinter
 
   # Private
 
-  addDeprecation: ({packageName, sourcePath, lineNumber}, message) ->
+  addDeprecation: (metadata, message) ->
+    {packageName} = metadata
     @deprecations[packageName] ?= []
-    @deprecations[packageName].push({sourcePath, lineNumber, message})
+    @deprecations[packageName].push(_.extend(
+      _.omit(metadata, "packageName"),
+      {message}
+    ))
 
   selectorHasClass: (selector, klass) ->
     new RegExp("\\.#{klass}([ >\.:]|$)").test(selector)

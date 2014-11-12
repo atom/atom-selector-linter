@@ -6,7 +6,44 @@ describe "SelectorLinter", ->
   beforeEach ->
     linter = new SelectorLinter
 
-  describe "::check(selector, {packageName, sourcePath, lineNumber})", ->
+  describe "::checkKeymap(keymap, metadata)", ->
+    it "records deprecations in the keymap", ->
+      linter.checkKeymap({
+        ".workspace":
+          "cmd-t": "the-namespace:the-command"
+      }, {
+        packageName: "the-package"
+        sourcePath: "keymaps/the-keymap.cson"
+      })
+
+      expect(linter.getDeprecations()).toEqual
+        "the-package": [
+          {
+            sourcePath: "keymaps/the-keymap.cson"
+            message: "Use the `atom-workspace` tag instead of the `workspace` class."
+          }
+        ]
+
+  describe "::checkStylesheet(css, metadata)", ->
+    it "records deprecations in the CSS", ->
+      linter.checkStylesheet("""
+        .workspace {
+          color: blue;
+        }
+      """, {
+        packageName: "the-package"
+        sourcePath: "stylesheets/the-stylesheet.less"
+      })
+
+      expect(linter.getDeprecations()).toEqual
+        "the-package": [
+          {
+            sourcePath: "stylesheets/the-stylesheet.less"
+            message: "Use the `atom-workspace` tag instead of the `workspace` class."
+          }
+        ]
+
+  describe "::check(selector, metadata)", ->
     describe "when the selector is not deprecated", ->
       it "doesn't record a deprecation", ->
         linter.check(".some-workspace", {
