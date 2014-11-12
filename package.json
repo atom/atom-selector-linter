@@ -1,6 +1,6 @@
 {
   "name": "atom-selector-linter",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A tool for finding deprecated selectors in atom packages",
   "main": "./lib/selector-linter",
   "scripts": {
@@ -20,8 +20,7 @@
       "url": "http://github.com/atom/atom-selector-linter/raw/master/LICENSE.md"
     }
   ],
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "coffee-script": "^1.7.0",
     "jasmine-focused": "^1.0.4",
