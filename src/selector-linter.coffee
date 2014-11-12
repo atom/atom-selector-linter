@@ -5,6 +5,7 @@ CLASS_TO_TAG =
   "pane": "atom-pane"
   "pane-container": "atom-pane-container"
   "text-editor": "atom-text-editor"
+  "tool-panel": "atom-panel"
 
 CLASS_TO_SELECTOR =
   "overlay": "atom-panel[location=\"modal\"]"
