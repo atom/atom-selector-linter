@@ -8,6 +8,10 @@ CLASS_TO_TAG =
 
 CLASS_TO_SELECTOR =
   "overlay": "atom-panel[location=\"modal\"]"
+  "panel-top": "atom-panel[location=\"top\"]"
+  "panel-left": "atom-panel[location=\"left\"]"
+  "panel-right": "atom-panel[location=\"right\"]"
+  "panel-bottom": "atom-panel[location=\"bottom\"]"
 
 module.exports =
 class SelectorLinter

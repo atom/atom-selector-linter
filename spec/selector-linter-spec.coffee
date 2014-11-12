@@ -147,6 +147,18 @@ describe "SelectorLinter", ->
             message: "Use the selector `atom-panel[location=\"modal\"]` instead of the `overlay` class."
           }]
 
+    it "recognizes selectors targeting panels", ->
+      linter.check(".panel-top", {
+        packageName: "the-package"
+        sourcePath: "stylesheets/the-sheet.less"
+      })
+
+      expect(linter.getDeprecations()).toEqual
+        "the-package":
+          "stylesheets/the-sheet.less": [{
+            message: "Use the selector `atom-panel[location=\"top\"]` instead of the `panel-top` class."
+          }]
+
     it "doesn't record the same deprecation twice", ->
       linter.check(".workspace", {
         packageName: "the-package"
