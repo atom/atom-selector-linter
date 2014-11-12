@@ -24,6 +24,25 @@ describe "SelectorLinter", ->
           }
         ]
 
+  describe "::checkMenu(menu, metadata)", ->
+    it "records deprecations in the menu's context menu", ->
+      linter.checkMenu({
+        "context-menu":
+          ".text-editor":
+            "The Command": "the-namespace:the-command"
+      }, {
+        packageName: "the-package"
+        sourcePath: "keymaps/the-keymap.cson"
+      })
+
+      expect(linter.getDeprecations()).toEqual
+        "the-package": [
+          {
+            sourcePath: "keymaps/the-keymap.cson"
+            message: "Use the `atom-text-editor` tag instead of the `text-editor` class."
+          }
+        ]
+
   describe "::checkStylesheet(css, metadata)", ->
     it "records deprecations in the CSS", ->
       linter.checkStylesheet("""

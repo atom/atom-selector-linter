@@ -20,6 +20,10 @@ class SelectorLinter
       unless line.indexOf(";") > 0
         @check(line, metadata)
 
+  checkMenu: (menu, metadata) ->
+    for selector of menu['context-menu']
+      @check(selector, metadata)
+
   check: (selector, metadata) ->
     for klass, tag of DEPRECATED_CLASSES
       if @selectorHasClass(selector, klass)
