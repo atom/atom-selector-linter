@@ -8,7 +8,8 @@ DEPRECATED_CLASSES =
 
 module.exports =
 class SelectorLinter
-  constructor: ->
+  constructor: ({maxPerPackage})->
+    @maxPerPackage = maxPerPackage ? 50
     @deprecations = {}
 
   checkKeymap: (keymap, metadata) ->
@@ -40,10 +41,14 @@ class SelectorLinter
   addDeprecation: (metadata, message) ->
     {packageName} = metadata
     @deprecations[packageName] ?= []
-    @deprecations[packageName].push(_.extend(
+    deprecation = _.extend(
       _.omit(metadata, "packageName"),
       {message}
-    ))
+    )
+
+    return if @deprecations[packageName].length >= @maxPerPackage
+    return if _.any @deprecations[packageName], (existing) -> _.isEqual(existing, deprecation)
+    @deprecations[packageName].push(deprecation)
 
   selectorHasClass: (selector, klass) ->
     new RegExp("\\.#{klass}([ >\.:]|$)").test(selector)

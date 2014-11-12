@@ -1,10 +1,11 @@
 SelectorLinter = require "../src/selector-linter"
+_ = require 'underscore-plus'
 
 describe "SelectorLinter", ->
   linter = null
 
   beforeEach ->
-    linter = new SelectorLinter
+    linter = new SelectorLinter(maxPerPackage: 10)
 
   describe "::checkKeymap(keymap, metadata)", ->
     it "records deprecations in the keymap", ->
@@ -144,3 +145,27 @@ describe "SelectorLinter", ->
               message: "Use `.bracket-matcher .region` to select highlighted brackets."
             }
           ]
+
+    it "doesn't record the same deprecation twice", ->
+      linter.check(".workspace", {
+        packageName: "the-package"
+        sourcePath: "stylesheets/the-stylesheet.less"
+        lineNumber: 21
+      })
+      linter.check(".workspace", {
+        packageName: "the-package"
+        sourcePath: "stylesheets/the-stylesheet.less"
+        lineNumber: 21
+      })
+
+      expect(linter.getDeprecations()["the-package"].length).toBe(1)
+
+    it "doesn't record more than the given maximum deprecations per package", ->
+      _.times 12, (i) ->
+        linter.check(".workspace", {
+          packageName: "the-package"
+          sourcePath: "stylesheets/the-stylesheet.less"
+          lineNumber: i
+        })
+
+      expect(linter.getDeprecations()["the-package"].length).toBe(10)
