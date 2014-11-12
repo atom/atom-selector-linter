@@ -1,10 +1,13 @@
 _ = require "underscore-plus"
 
-DEPRECATED_CLASSES =
+CLASS_TO_TAG =
   "workspace": "atom-workspace"
   "pane": "atom-pane"
   "pane-container": "atom-pane-container"
   "text-editor": "atom-text-editor"
+
+CLASS_TO_SELECTOR =
+  "overlay": "atom-panel[location=\"modal\"]"
 
 module.exports =
 class SelectorLinter
@@ -26,9 +29,13 @@ class SelectorLinter
       @check(selector, metadata)
 
   check: (selector, metadata) ->
-    for klass, tag of DEPRECATED_CLASSES
+    for klass, tag of CLASS_TO_TAG
       if @selectorHasClass(selector, klass)
         @addDeprecation(metadata, "Use the `#{tag}` tag instead of the `#{klass}` class.")
+
+    for klass, replacement of CLASS_TO_SELECTOR
+      if @selectorHasClass(selector, klass)
+        @addDeprecation(metadata, "Use the selector `#{replacement}` instead of the `#{klass}` class.")
 
     if @selectorHasClass(selector, "bracket-matcher") and not /bracket-matcher.*region/.test(selector)
       @addDeprecation(metadata, "Use `.bracket-matcher .region` to select highlighted brackets.")
