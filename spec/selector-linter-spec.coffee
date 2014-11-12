@@ -5,7 +5,7 @@ describe "SelectorLinter", ->
   linter = null
 
   beforeEach ->
-    linter = new SelectorLinter(maxPerPackage: 10)
+    linter = new SelectorLinter(maxPerFile: 10)
 
   describe "::checkKeymap(keymap, metadata)", ->
     it "records deprecations in the keymap", ->
@@ -18,12 +18,10 @@ describe "SelectorLinter", ->
       })
 
       expect(linter.getDeprecations()).toEqual
-        "the-package": [
-          {
-            sourcePath: "keymaps/the-keymap.cson"
+        "the-package":
+          "keymaps/the-keymap.cson": [{
             message: "Use the `atom-workspace` tag instead of the `workspace` class."
-          }
-        ]
+          }]
 
   describe "::checkMenu(menu, metadata)", ->
     it "records deprecations in the menu's context menu", ->
@@ -37,12 +35,10 @@ describe "SelectorLinter", ->
       })
 
       expect(linter.getDeprecations()).toEqual
-        "the-package": [
-          {
-            sourcePath: "keymaps/the-keymap.cson"
+        "the-package":
+          "keymaps/the-keymap.cson": [{
             message: "Use the `atom-text-editor` tag instead of the `text-editor` class."
-          }
-        ]
+          }]
 
   describe "::checkStylesheet(css, metadata)", ->
     it "records deprecations in the CSS", ->
@@ -56,12 +52,10 @@ describe "SelectorLinter", ->
       })
 
       expect(linter.getDeprecations()).toEqual
-        "the-package": [
-          {
-            sourcePath: "stylesheets/the-stylesheet.less"
+        "the-package":
+          "stylesheets/the-stylesheet.less": [{
             message: "Use the `atom-workspace` tag instead of the `workspace` class."
-          }
-        ]
+          }]
 
   describe "::check(selector, metadata)", ->
     describe "when the selector is not deprecated", ->
@@ -103,31 +97,30 @@ describe "SelectorLinter", ->
         })
 
         expect(linter.getDeprecations()).toEqual
-          "the-package": [
-            {
-              sourcePath: "stylesheets/the-stylesheet.less"
-              lineNumber: 21
-              message: "Use the `atom-workspace` tag instead of the `workspace` class."
-            }
-            {
-              sourcePath: "keymaps/the-keymap.cson"
-              lineNumber: 22
-              message: "Use the `atom-text-editor` tag instead of the `text-editor` class."
-            }
-          ]
-
-          "the-other-package": [
-            {
-              sourcePath: "menus/the-menu.cson"
-              lineNumber: 23
-              message: "Use the `atom-pane` tag instead of the `pane` class."
-            }
-            {
-              sourcePath: "menus/the-menu.cson"
-              lineNumber: 24
-              message: "Use the `atom-pane-container` tag instead of the `pane-container` class."
-            }
-          ]
+          "the-package":
+            "stylesheets/the-stylesheet.less": [
+              {
+                lineNumber: 21
+                message: "Use the `atom-workspace` tag instead of the `workspace` class."
+              }
+            ]
+            "keymaps/the-keymap.cson": [
+              {
+                lineNumber: 22
+                message: "Use the `atom-text-editor` tag instead of the `text-editor` class."
+              }
+            ]
+          "the-other-package":
+            "menus/the-menu.cson": [
+              {
+                lineNumber: 23
+                message: "Use the `atom-pane` tag instead of the `pane` class."
+              },
+              {
+                lineNumber: 24
+                message: "Use the `atom-pane-container` tag instead of the `pane-container` class."
+              }
+            ]
 
     describe "when the selector targets the bracket-matcher highlight", ->
       it "records a deprecation", ->
@@ -138,34 +131,32 @@ describe "SelectorLinter", ->
         })
 
         expect(linter.getDeprecations()).toEqual
-          "the-package": [
-            {
-              sourcePath: "stylesheets/the-sheet.less"
+          "the-package":
+            "stylesheets/the-sheet.less": [{
               lineNumber: 22
               message: "Use `.bracket-matcher .region` to select highlighted brackets."
-            }
-          ]
+            }]
 
     it "doesn't record the same deprecation twice", ->
       linter.check(".workspace", {
         packageName: "the-package"
-        sourcePath: "stylesheets/the-stylesheet.less"
+        sourcePath: "index.less"
         lineNumber: 21
       })
       linter.check(".workspace", {
         packageName: "the-package"
-        sourcePath: "stylesheets/the-stylesheet.less"
+        sourcePath: "index.less"
         lineNumber: 21
       })
 
-      expect(linter.getDeprecations()["the-package"].length).toBe(1)
+      expect(linter.getDeprecations()["the-package"]["index.less"].length).toBe(1)
 
     it "doesn't record more than the given maximum deprecations per package", ->
       _.times 12, (i) ->
         linter.check(".workspace", {
           packageName: "the-package"
-          sourcePath: "stylesheets/the-stylesheet.less"
+          sourcePath: "index.less"
           lineNumber: i
         })
 
-      expect(linter.getDeprecations()["the-package"].length).toBe(10)
+      expect(linter.getDeprecations()["the-package"]["index.less"].length).toBe(10)
