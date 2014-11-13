@@ -45,6 +45,9 @@ class SelectorLinter
     if selectorHasClass(selector, "bracket-matcher") and not /bracket-matcher.*region/.test(selector)
       @addDeprecation(metadata, "Use `.bracket-matcher .region` to select highlighted brackets.")
 
+  clearDeprecations: ->
+    @deprecations = {}
+
   getDeprecations: ->
     @deprecations
 

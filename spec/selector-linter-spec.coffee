@@ -41,37 +41,54 @@ describe "SelectorLinter", ->
           }]
 
   describe "::checkStylesheet(css, metadata)", ->
+    expectDeprecation = (css, message) ->
+      linter.clearDeprecations()
+      linter.checkStylesheet(css, {
+        packageName: "the-package",
+        sourcePath: "index.less"
+      })
+      expect(linter.getDeprecations()["the-package"]).toBeTruthy()
+      expect(linter.getDeprecations()["the-package"]["index.less"]).toContain({message})
+
     it "records deprecations in the CSS", ->
-      linter.checkStylesheet("""
-        .workspace {
-          color: blue;
-        }
-      """, {
+      expectDeprecation(
+        ".workspace { color: blue; }"
+        "Use the `atom-workspace` tag instead of the `workspace` class."
+      )
+  describe "::check(selector, metadata)", ->
+    expectDeprecation = (selector, message) ->
+      linter.check(selector, {
         packageName: "the-package"
-        sourcePath: "stylesheets/the-stylesheet.less"
+        sourcePath: "the-source-file"
       })
 
-      expect(linter.getDeprecations()).toEqual
-        "the-package":
-          "stylesheets/the-stylesheet.less": [{
-            message: "Use the `atom-workspace` tag instead of the `workspace` class."
-          }]
+      expect(linter.getDeprecations()["the-package"]).toBeTruthy()
+      expect(linter.getDeprecations()["the-package"]["the-source-file"]).toContain({message})
 
-  describe "::check(selector, metadata)", ->
-    describe "when the selector is not deprecated", ->
-      it "doesn't record a deprecation", ->
-        linter.check(".some-workspace", {
-          packageName: "the-package"
-          sourcePath: "stylesheets/the-sheet.less"
-          lineNumber: 21
-        })
-        linter.check(".workspace-something", {
-          packageName: "the-package"
-          sourcePath: "stylesheets/the-sheet.less"
-          lineNumber: 22
-        })
+    it "doesn't record a deprecation for up-to-date selectors", ->
+      linter.check("atom-text-editor", {
+        packageName: "the-package"
+        sourcePath: "stylesheets/the-sheet.less"
+      })
+      expect(linter.getDeprecations()).toEqual({})
 
-        expect(linter.getDeprecations()).toEqual({})
+    it "recognizes selectors targeting the `bracket-matcher` class", ->
+      expectDeprecation(
+        "my-region .bracket-matcher",
+        "Use `.bracket-matcher .region` to select highlighted brackets."
+      )
+
+    it "recognizes selectors targeting overlays", ->
+      expectDeprecation(
+        ".overlay",
+        "Use the selector `atom-panel[location=\"modal\"]` instead of the `overlay` class."
+      )
+
+    it "recognizes selectors targeting panels", ->
+      expectDeprecation(
+        ".panel-top",
+        "Use the selector `atom-panel[location=\"top\"]` instead of the `panel-top` class."
+      )
 
     it "groups deprecations by package and source file", ->
       linter.check(".workspace", {
@@ -120,44 +137,6 @@ describe "SelectorLinter", ->
               message: "Use the `atom-pane-container` tag instead of the `pane-container` class."
             }
           ]
-
-    it "recognizes selectors targeting the `bracket-matcher` class", ->
-      linter.check("my-region .bracket-matcher", {
-        packageName: "the-package"
-        sourcePath: "stylesheets/the-sheet.less"
-        lineNumber: 22
-      })
-
-      expect(linter.getDeprecations()).toEqual
-        "the-package":
-          "stylesheets/the-sheet.less": [{
-            lineNumber: 22
-            message: "Use `.bracket-matcher .region` to select highlighted brackets."
-          }]
-
-    it "recognizes selectors targeting overlays", ->
-      linter.check(".overlay", {
-        packageName: "the-package"
-        sourcePath: "stylesheets/the-sheet.less"
-      })
-
-      expect(linter.getDeprecations()).toEqual
-        "the-package":
-          "stylesheets/the-sheet.less": [{
-            message: "Use the selector `atom-panel[location=\"modal\"]` instead of the `overlay` class."
-          }]
-
-    it "recognizes selectors targeting panels", ->
-      linter.check(".panel-top", {
-        packageName: "the-package"
-        sourcePath: "stylesheets/the-sheet.less"
-      })
-
-      expect(linter.getDeprecations()).toEqual
-        "the-package":
-          "stylesheets/the-sheet.less": [{
-            message: "Use the selector `atom-panel[location=\"top\"]` instead of the `panel-top` class."
-          }]
 
     it "doesn't record the same deprecation twice", ->
       linter.check(".workspace", {
