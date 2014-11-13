@@ -69,6 +69,17 @@ describe "SelectorLinter", ->
         "Style elements within text editors using the `atom-text-editor::shadow` selector or the `.atom-text-editor.less` file extension"
       )
 
+    it "doesn't suggest the ::shadow psuedo-selector if it is in use", ->
+      linter.checkUIStylesheet("""
+        atom-text-editor span, atom-text-editor::shadow span {
+          color: black;
+        }
+      """, {
+        packageName: "the-package",
+        sourcePath: "index.less"
+      })
+      expect(linter.getDeprecations()).toEqual({})
+
   describe "::checkSyntaxStylesheet(css, metadata)", ->
     expectDeprecation = (css, message) ->
       linter.clearDeprecations()
