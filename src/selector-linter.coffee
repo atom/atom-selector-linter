@@ -42,10 +42,10 @@ class SelectorLinter
       if selectorHasClass(selector, klass)
         @addDeprecation(metadata, "Use the selector `#{replacement}` instead of the `#{klass}` class.")
 
-    if /\.mini[\.\w]*\.editor/.test(selector) or /.editor[\.\w]*.mini/.test(selector)
+    if selectorHasClass(selector, "editor") and selectorHasClass(selector, "mini")
       @addDeprecation(metadata, "Use the selector `.editor[mini]` to select mini-editors.")
 
-    if selectorHasClass(selector, "bracket-matcher") and not /bracket-matcher.*region/.test(selector)
+    if selectorHasClass(selector, "bracket-matcher") and not selectorHasClass(selector, "region")
       @addDeprecation(metadata, "Use `.bracket-matcher .region` to select highlighted brackets.")
 
   clearDeprecations: ->
