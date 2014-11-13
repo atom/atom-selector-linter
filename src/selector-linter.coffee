@@ -1,4 +1,5 @@
 _ = require "underscore-plus"
+helpers = require "./helpers"
 
 CLASS_TO_TAG =
   "workspace": "atom-workspace"
@@ -25,9 +26,8 @@ class SelectorLinter
       @check(selector, metadata)
 
   checkStylesheet: (css, metadata) ->
-    for line in css.split("\n")
-      unless line.indexOf(";") > 0
-        @check(line, metadata)
+    helpers.eachSelector css, (selector) =>
+      @check(selector, metadata)
 
   checkMenu: (menu, metadata) ->
     for selector of menu['context-menu']
