@@ -80,6 +80,17 @@ describe "SelectorLinter", ->
       })
       expect(linter.getDeprecations()).toEqual({})
 
+    it "doesn't suggest ::shadow unless children of the editor are being targeted", ->
+      linter.checkUIStylesheet("""
+        .editor-colors {
+          color: black;
+        }
+      """, {
+        packageName: "the-package",
+        sourcePath: "index.less"
+      })
+      expect(linter.getDeprecations()).toEqual({})
+
   describe "::checkSyntaxStylesheet(css, metadata)", ->
     expectDeprecation = (css, message) ->
       linter.clearDeprecations()

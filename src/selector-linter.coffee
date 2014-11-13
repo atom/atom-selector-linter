@@ -29,7 +29,7 @@ class SelectorLinter
     shadowSelectorUsed = editorDescendentUsed = false
     eachSelector css, (selector) =>
       @check(selector, metadata)
-      editorDescendentUsed ||= /(\.text-editor|\.editor|atom-text-editor).*\w/.test(selector)
+      editorDescendentUsed ||= /(\.text-editor|\.editor|atom-text-editor).*[ >].*\w/.test(selector)
       shadowSelectorUsed ||= selectorHasPsuedoClass(selector, ":shadow")
     if editorDescendentUsed and not shadowSelectorUsed
       @addDeprecation(metadata, "Style elements within text editors using the `atom-text-editor::shadow` selector or the `.atom-text-editor.less` file extension")
