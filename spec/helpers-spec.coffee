@@ -34,3 +34,26 @@ describe "Helpers", ->
       )
 
       expect(selectorsYielded).toEqual([".class1", ".class2"])
+
+  describe ".selectorHasClass(selector, klass)", ->
+    it "returns true when the selector uses the class", ->
+      expect(helpers.selectorHasClass(
+        "div.the-class:first-child",
+        "the-class"
+      )).toBeTruthy()
+
+      expect(helpers.selectorHasClass(
+        "span.the-class",
+        "the-class"
+      )).toBeTruthy()
+
+      expect(helpers.selectorHasClass(
+        "span.the-class>other-tag",
+        "the-class"
+      )).toBeTruthy()
+
+    it "returns false when the selector doesn't use the class", ->
+      expect(helpers.selectorHasClass(
+        "div.the-class-something",
+        "the-class"
+      )).toBeFalsy()

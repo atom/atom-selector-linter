@@ -1,5 +1,5 @@
 _ = require "underscore-plus"
-helpers = require "./helpers"
+{selectorHasClass, eachSelector} = require "./helpers"
 
 CLASS_TO_TAG =
   "workspace": "atom-workspace"
@@ -26,7 +26,7 @@ class SelectorLinter
       @check(selector, metadata)
 
   checkStylesheet: (css, metadata) ->
-    helpers.eachSelector css, (selector) =>
+    eachSelector css, (selector) =>
       @check(selector, metadata)
 
   checkMenu: (menu, metadata) ->
@@ -35,14 +35,14 @@ class SelectorLinter
 
   check: (selector, metadata) ->
     for klass, tag of CLASS_TO_TAG
-      if @selectorHasClass(selector, klass)
+      if selectorHasClass(selector, klass)
         @addDeprecation(metadata, "Use the `#{tag}` tag instead of the `#{klass}` class.")
 
     for klass, replacement of CLASS_TO_SELECTOR
-      if @selectorHasClass(selector, klass)
+      if selectorHasClass(selector, klass)
         @addDeprecation(metadata, "Use the selector `#{replacement}` instead of the `#{klass}` class.")
 
-    if @selectorHasClass(selector, "bracket-matcher") and not /bracket-matcher.*region/.test(selector)
+    if selectorHasClass(selector, "bracket-matcher") and not /bracket-matcher.*region/.test(selector)
       @addDeprecation(metadata, "Use `.bracket-matcher .region` to select highlighted brackets.")
 
   getDeprecations: ->
@@ -62,6 +62,3 @@ class SelectorLinter
     return if fileDeprecations.length >= @maxPerFile
     return if _.any fileDeprecations, (existing) -> _.isEqual(existing, deprecation)
     fileDeprecations.push(deprecation)
-
-  selectorHasClass: (selector, klass) ->
-    new RegExp("\\.#{klass}([ >\.:]|$)").test(selector)
