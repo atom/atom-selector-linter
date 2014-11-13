@@ -40,14 +40,13 @@ describe "SelectorLinter", ->
             message: "Use the `atom-text-editor` tag instead of the `text-editor` class."
           }]
 
-  describe "::checkStylesheet(css, metadata)", ->
+  describe "::checkUIStylesheet(css, metadata)", ->
     expectDeprecation = (css, message) ->
       linter.clearDeprecations()
-      linter.checkStylesheet(css, {
+      linter.checkUIStylesheet(css, {
         packageName: "the-package",
         sourcePath: "index.less"
       })
-      expect(linter.getDeprecations()["the-package"]).toBeTruthy()
       expect(linter.getDeprecations()["the-package"]["index.less"]).toContain({message})
 
     it "records deprecations in the CSS", ->
@@ -55,6 +54,48 @@ describe "SelectorLinter", ->
         ".workspace { color: blue; }"
         "Use the `atom-workspace` tag instead of the `workspace` class."
       )
+
+    it "suggests using the shadow DOM psuedo selectors or the context stylesheet", ->
+      expectDeprecation(
+        ".editor .cursor { background-color: #aaa; }",
+        "Style elements within text editors using the `atom-text-editor::shadow` selector or the `.atom-text-editor.less` file extension"
+      )
+      expectDeprecation(
+        ".text-editor .cursor { background-color: #aaa; }",
+        "Style elements within text editors using the `atom-text-editor::shadow` selector or the `.atom-text-editor.less` file extension"
+      )
+      expectDeprecation(
+        "atom-text-editor .cursor { background-color: #aaa; }",
+        "Style elements within text editors using the `atom-text-editor::shadow` selector or the `.atom-text-editor.less` file extension"
+      )
+
+  describe "::checkSyntaxStylesheet(css, metadata)", ->
+    expectDeprecation = (css, message) ->
+      linter.clearDeprecations()
+      linter.checkSyntaxStylesheet(css, {
+        packageName: "the-package",
+        sourcePath: "index.less"
+      })
+      expect(linter.getDeprecations()["the-package"]["index.less"]).toContain({message})
+
+    it "suggests using the :host psuedo-selector", ->
+      expectDeprecation(
+        ".editor .cursor",
+        "Target the `:host` psuedo-selector in addition to the `editor` class for forward-compatibility"
+      )
+
+    it "doesn't log a deprecation if the :host selector is in use in the stylesheet", ->
+      linter.checkSyntaxStylesheet("""
+        .editor span, :host span {
+          color: black;
+        }
+      """, {
+        packageName: "the-package",
+        sourcePath: "index.less"
+      })
+
+      expect(linter.getDeprecations()).toEqual({})
+
   describe "::check(selector, metadata)", ->
     expectDeprecation = (selector, message) ->
       linter.check(selector, {

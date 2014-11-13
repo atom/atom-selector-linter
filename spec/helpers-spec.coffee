@@ -57,3 +57,26 @@ describe "Helpers", ->
         "div.the-class-something",
         "the-class"
       )).toBeFalsy()
+
+  describe ".selectorHasPsuedoClass(selector, klass)", ->
+    it "returns true when the selector uses the psuedo-class", ->
+      expect(helpers.selectorHasPsuedoClass(
+        "div.the-class:the-psuedo-class",
+        "the-psuedo-class"
+      )).toBeTruthy()
+
+      expect(helpers.selectorHasPsuedoClass(
+        ":the-psuedo-class other-tag",
+        "the-psuedo-class"
+      )).toBeTruthy()
+
+      expect(helpers.selectorHasPsuedoClass(
+        ":the-psuedo-class>other-tag",
+        "the-psuedo-class"
+      )).toBeTruthy()
+
+    it "returns false when the selector doesn't use the psuedo-class", ->
+      expect(helpers.selectorHasPsuedoClass(
+        "div:the-psuedo-class-something",
+        "the-class"
+      )).toBeFalsy()

@@ -1,5 +1,5 @@
 _ = require "underscore-plus"
-{selectorHasClass, eachSelector} = require "./helpers"
+{selectorHasClass, eachSelector, selectorHasPsuedoClass} = require "./helpers"
 
 CLASS_TO_TAG =
   "workspace": "atom-workspace"
@@ -25,9 +25,20 @@ class SelectorLinter
     for selector of keymap
       @check(selector, metadata)
 
-  checkStylesheet: (css, metadata) ->
+  checkUIStylesheet: (css, metadata) ->
     eachSelector css, (selector) =>
       @check(selector, metadata)
+      if /(\.text-editor|\.editor|atom-text-editor).*\w/.test(selector)
+        @addDeprecation(metadata, "Style elements within text editors using the `atom-text-editor::shadow` selector or the `.atom-text-editor.less` file extension")
+
+  checkSyntaxStylesheet: (css, metadata) ->
+    hostSelectorUsed = editorSelectorUsed = false
+    eachSelector css, (selector) =>
+      @check(selector, metadata)
+      editorSelectorUsed ||= selectorHasClass(selector, "editor")
+      hostSelectorUsed ||= selectorHasPsuedoClass(selector, "host")
+    if editorSelectorUsed and not hostSelectorUsed
+      @addDeprecation(metadata, "Target the `:host` psuedo-selector in addition to the `editor` class for forward-compatibility")
 
   checkMenu: (menu, metadata) ->
     for selector of menu['context-menu']

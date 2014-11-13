@@ -1,4 +1,5 @@
 classRegexpCache = {}
+psuedoClassRegexpCache = {}
 
 module.exports =
   eachSelector: (css, fn) ->
@@ -10,3 +11,7 @@ module.exports =
   selectorHasClass: (selector, klass) ->
     classRegexpCache[klass] ?= new RegExp("\\.#{klass}([ >\.:]|$)")
     classRegexpCache[klass].test(selector)
+
+  selectorHasPsuedoClass: (selector, klass) ->
+    psuedoClassRegexpCache[klass] ?= new RegExp("\\:#{klass}([ >\.:]|$)")
+    psuedoClassRegexpCache[klass].test(selector)
