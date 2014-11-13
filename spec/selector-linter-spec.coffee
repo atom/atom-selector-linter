@@ -65,29 +65,35 @@ describe "SelectorLinter", ->
       expect(linter.getDeprecations()["the-package"]).toBeTruthy()
       expect(linter.getDeprecations()["the-package"]["the-source-file"]).toContain({message})
 
-    it "doesn't record a deprecation for up-to-date selectors", ->
+    it "doesn't deprecate up-to-date selectors", ->
       linter.check("atom-text-editor", {
         packageName: "the-package"
         sourcePath: "stylesheets/the-sheet.less"
       })
       expect(linter.getDeprecations()).toEqual({})
 
-    it "recognizes selectors targeting the `bracket-matcher` class", ->
+    it "deprecates selectors targeting the `bracket-matcher` class itself", ->
       expectDeprecation(
         "my-region .bracket-matcher",
         "Use `.bracket-matcher .region` to select highlighted brackets."
       )
 
-    it "recognizes selectors targeting overlays", ->
+    it "deprecates selectors using the overlay class", ->
       expectDeprecation(
         ".overlay",
         "Use the selector `atom-panel[location=\"modal\"]` instead of the `overlay` class."
       )
 
-    it "recognizes selectors targeting panels", ->
+    it "deprecates selectors using old panel classes", ->
       expectDeprecation(
         ".panel-top",
         "Use the selector `atom-panel[location=\"top\"]` instead of the `panel-top` class."
+      )
+
+    it "deprecates the mini class on editors", ->
+      expectDeprecation(
+        ".editor.mini",
+        "Use the selector `.editor[mini]` to select mini-editors."
       )
 
     it "groups deprecations by package and source file", ->
