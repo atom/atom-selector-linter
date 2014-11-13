@@ -17,8 +17,7 @@ CLASS_TO_SELECTOR =
 
 module.exports =
 class SelectorLinter
-  constructor: ({maxPerFile})->
-    @maxPerFile = maxPerFile ? 50
+  constructor: ->
     @deprecations = {}
 
   checkKeymap: (keymap, metadata) ->
@@ -79,6 +78,5 @@ class SelectorLinter
       {message}
     )
 
-    return if fileDeprecations.length >= @maxPerFile
-    return if _.any fileDeprecations, (existing) -> _.isEqual(existing, deprecation)
-    fileDeprecations.push(deprecation)
+    unless _.any(fileDeprecations, (existing) -> _.isEqual(existing, deprecation))
+      fileDeprecations.push(deprecation)
