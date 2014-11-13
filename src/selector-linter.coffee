@@ -1,4 +1,5 @@
 _ = require "underscore-plus"
+path = require "path"
 {selectorHasClass, eachSelector, selectorHasPsuedoClass} = require "./helpers"
 
 CLASS_TO_TAG =
@@ -19,6 +20,17 @@ module.exports =
 class SelectorLinter
   constructor: ->
     @deprecations = {}
+
+  checkPackage: (pkg) ->
+    for [sourcePath, menu] in pkg.menus
+      @checkMenu(menu, @packageMetadata(pkg, sourcePath))
+    for [sourcePath, keymap] in pkg.keymaps
+      @checkKeymap(keymap, @packageMetadata(pkg, sourcePath))
+    for [sourcePath, stylesheet] in pkg.stylesheets
+      if pkg.metadata["theme"] is "syntax" or /atom-text-editor\.(less|css)/.test(sourcePath)
+        @checkSyntaxStylesheet(stylesheet, @packageMetadata(pkg, sourcePath))
+      else
+        @checkUIStylesheet(stylesheet, @packageMetadata(pkg, sourcePath))
 
   checkKeymap: (keymap, metadata) ->
     for selector of keymap
@@ -68,6 +80,13 @@ class SelectorLinter
     @deprecations
 
   # Private
+
+  packageMetadata: (pkg, sourcePath) ->
+    {
+      packageName: pkg.name,
+      packagePath: pkg.path,
+      sourcePath: path.relative(pkg.path, sourcePath)
+    }
 
   addDeprecation: (metadata, message) ->
     {packageName, sourcePath} = metadata

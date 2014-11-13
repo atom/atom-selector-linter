@@ -7,6 +7,90 @@ describe "SelectorLinter", ->
   beforeEach ->
     linter = new SelectorLinter
 
+  describe "::checkPackage", ->
+    fakePackage = null
+
+    beforeEach ->
+      fakePackage =
+        name: "the-package"
+        path: "/path/to/package"
+        metadata: {}
+        stylesheets: [
+          ["/path/to/package/index.less", ".editor .cursor { background-color: blue; }"]
+        ]
+        menus: [
+          ["/path/to/package/menus/the-menu.cson", {
+            "context-menu":
+              ".workspace":
+                "The Command": "the-command"
+          }]
+        ],
+        keymaps: [
+          ["/path/to/package/keymaps/the-keymap.cson", {
+            ".workspace":
+              "cmd-x": "the-command"
+          }]
+        ]
+
+    it "checks the package's menus", ->
+      linter.checkPackage(fakePackage)
+      expect(linter.getDeprecations()["the-package"]["menus/the-menu.cson"]).toEqual [
+        {
+          message: "Use the `atom-workspace` tag instead of the `workspace` class.",
+          packagePath: "/path/to/package"
+        }
+      ]
+
+    it "checks the package's keymaps", ->
+      linter.checkPackage(fakePackage)
+      expect(linter.getDeprecations()["the-package"]["keymaps/the-keymap.cson"]).toEqual [
+        {
+          message: "Use the `atom-workspace` tag instead of the `workspace` class.",
+          packagePath: "/path/to/package"
+        }
+      ]
+
+    describe "when the package is a syntax theme", ->
+      beforeEach ->
+        fakePackage.metadata["theme"] = "syntax"
+
+      it "checks its stylesheets as syntax stylesheets", ->
+        linter.checkPackage(fakePackage)
+        expect(linter.getDeprecations()["the-package"]["index.less"]).toEqual [
+          {
+            message: "Target the `:host` psuedo-selector in addition to the `editor` class for forward-compatibility",
+            packagePath: "/path/to/package"
+          }
+        ]
+
+    describe "when the package is not a syntax theme", ->
+      beforeEach ->
+        fakePackage.metadata["theme"] = "ui"
+
+      it "checks its stylesheets as UI stylesheets", ->
+        linter.checkPackage(fakePackage)
+        expect(linter.getDeprecations()["the-package"]["index.less"]).toEqual [
+          {
+            message: "Style elements within text editors using the `atom-text-editor::shadow` selector or the `.atom-text-editor.less` file extension"
+            packagePath: "/path/to/package"
+          }
+        ]
+
+      it "checks stylesheets with the editor context as syntax stylesheets", ->
+        fakePackage.stylesheets.push([
+          "/path/to/package/stylesheets/the-stylesheet.atom-text-editor.less",
+          ".editor .cursor { color: red; }"
+        ])
+
+        linter.checkPackage(fakePackage)
+
+        expect(linter.getDeprecations()["the-package"]["stylesheets/the-stylesheet.atom-text-editor.less"]).toEqual [
+          {
+            message: "Target the `:host` psuedo-selector in addition to the `editor` class for forward-compatibility",
+            packagePath: "/path/to/package"
+          }
+        ]
+
   describe "::checkKeymap(keymap, metadata)", ->
     it "records deprecations in the keymap", ->
       linter.checkKeymap({
