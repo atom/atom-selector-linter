@@ -74,17 +74,17 @@ describe "SelectorLinter", ->
         expect(linter.getDeprecations()).toEqual({})
 
     it "groups deprecations by package and source file", ->
-      linter.check(".workspace > span", {
+      linter.check(".workspace", {
         packageName: "the-package"
         sourcePath: "stylesheets/the-stylesheet.less"
         lineNumber: 21
       })
-      linter.check("div.text-editor.other-class > span", {
+      linter.check(".text-editor", {
         packageName: "the-package"
         sourcePath: "keymaps/the-keymap.cson"
         lineNumber: 22
       })
-      linter.check(".pane:first-child span", {
+      linter.check(".pane", {
         packageName: "the-other-package"
         sourcePath: "menus/the-menu.cson"
         lineNumber: 23
