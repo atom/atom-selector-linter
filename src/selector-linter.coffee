@@ -49,13 +49,17 @@ class SelectorLinter
       """)
 
   checkSyntaxStylesheet: (css, metadata) ->
-    hostSelectorUsed = editorSelectorUsed = false
+    hostSelectorUsed = editorClassUsed = editorColorsClassUsed = false
     eachSelector css, (selector) =>
       @check(selector, metadata)
-      editorSelectorUsed ||= selectorHasClass(selector, "editor")
+      editorClassUsed ||= selectorHasClass(selector, "editor")
+      editorColorsClassUsed ||= selectorHasClass(selector, "editor-colors")
       hostSelectorUsed ||= selectorHasPsuedoClass(selector, "host")
-    if editorSelectorUsed and not hostSelectorUsed
-      @addDeprecation(metadata, "Target the `:host` psuedo-selector in addition to the `editor` class for forward-compatibility")
+    unless hostSelectorUsed
+      if editorClassUsed
+        @addDeprecation(metadata, "Target the `:host` psuedo-selector in addition to the `editor` class for forward-compatibility")
+      if editorColorsClassUsed
+        @addDeprecation(metadata, "Target the `:host` psuedo-selector in addition to the `editor-colors` class for forward-compatibility")
 
   checkMenu: (menu, metadata) ->
     for selector of menu['context-menu']

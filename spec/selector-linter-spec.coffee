@@ -193,6 +193,10 @@ describe "SelectorLinter", ->
         ".editor .cursor",
         "Target the `:host` psuedo-selector in addition to the `editor` class for forward-compatibility"
       )
+      expectDeprecation(
+        ".editor-colors .cursor",
+        "Target the `:host` psuedo-selector in addition to the `editor-colors` class for forward-compatibility"
+      )
 
     it "doesn't log a deprecation if the :host selector is in use in the stylesheet", ->
       linter.checkSyntaxStylesheet("""
