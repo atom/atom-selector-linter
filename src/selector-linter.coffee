@@ -43,7 +43,10 @@ class SelectorLinter
       editorDescendentUsed ||= /(\.text-editor|\.editor|atom-text-editor).*[ >].*\w/.test(selector)
       shadowSelectorUsed ||= selectorHasPsuedoClass(selector, ":shadow")
     if editorDescendentUsed and not shadowSelectorUsed
-      @addDeprecation(metadata, "Style elements within text editors using the `atom-text-editor::shadow` selector or the `.atom-text-editor.less` file extension")
+      @addDeprecation(metadata, """
+        Style elements within text editors using the `atom-text-editor::shadow` selector or the `.atom-text-editor.less` file extension.
+        If you want to target overlay elements, target them directly or as descendants of `atom-overlay` elements.
+      """)
 
   checkSyntaxStylesheet: (css, metadata) ->
     hostSelectorUsed = editorSelectorUsed = false

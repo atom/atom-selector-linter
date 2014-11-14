@@ -69,12 +69,7 @@ describe "SelectorLinter", ->
 
       it "checks its stylesheets as UI stylesheets", ->
         linter.checkPackage(fakePackage)
-        expect(linter.getDeprecations()["the-package"]["index.less"]).toEqual [
-          {
-            message: "Style elements within text editors using the `atom-text-editor::shadow` selector or the `.atom-text-editor.less` file extension"
-            packagePath: "/path/to/package"
-          }
-        ]
+        expect(linter.getDeprecations()["the-package"]["index.less"][0].message).toMatch(/atom-text-editor::shadow/)
 
       it "checks stylesheets with the editor context as syntax stylesheets", ->
         fakePackage.stylesheets.push([
@@ -142,15 +137,24 @@ describe "SelectorLinter", ->
     it "suggests using the shadow DOM psuedo selectors or the context stylesheet", ->
       expectDeprecation(
         ".editor .cursor { background-color: #aaa; }",
-        "Style elements within text editors using the `atom-text-editor::shadow` selector or the `.atom-text-editor.less` file extension"
+        """
+          Style elements within text editors using the `atom-text-editor::shadow` selector or the `.atom-text-editor.less` file extension.
+          If you want to target overlay elements, target them directly or as descendants of `atom-overlay` elements.
+        """
       )
       expectDeprecation(
         ".text-editor .cursor { background-color: #aaa; }",
-        "Style elements within text editors using the `atom-text-editor::shadow` selector or the `.atom-text-editor.less` file extension"
+        """
+          Style elements within text editors using the `atom-text-editor::shadow` selector or the `.atom-text-editor.less` file extension.
+          If you want to target overlay elements, target them directly or as descendants of `atom-overlay` elements.
+        """
       )
       expectDeprecation(
         "atom-text-editor .cursor { background-color: #aaa; }",
-        "Style elements within text editors using the `atom-text-editor::shadow` selector or the `.atom-text-editor.less` file extension"
+        """
+          Style elements within text editors using the `atom-text-editor::shadow` selector or the `.atom-text-editor.less` file extension.
+          If you want to target overlay elements, target them directly or as descendants of `atom-overlay` elements.
+        """
       )
 
     it "doesn't suggest the ::shadow psuedo-selector if it is in use", ->
