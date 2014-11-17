@@ -75,7 +75,7 @@ class SelectorLinter
         @addDeprecation(metadata, "Use the selector `#{replacement}` instead of the `#{klass}` class.")
 
     if selectorHasClass(selector, "editor") and selectorHasClass(selector, "mini")
-      @addDeprecation(metadata, "Use the selector `.editor[mini]` to select mini-editors.")
+      @addDeprecation(metadata, "Use the selector `atom-text-editor[mini]` to select mini-editors.")
 
     if selectorHasClass(selector, "bracket-matcher") and not selectorHasClass(selector, "region")
       @addDeprecation(metadata, "Use `.bracket-matcher .region` to select highlighted brackets.")

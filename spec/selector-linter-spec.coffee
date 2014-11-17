@@ -248,7 +248,7 @@ describe "SelectorLinter", ->
     it "deprecates the mini class on editors", ->
       expectDeprecation(
         ".editor.mini",
-        "Use the selector `.editor[mini]` to select mini-editors."
+        "Use the selector `atom-text-editor[mini]` to select mini-editors."
       )
 
     it "groups deprecations by package and source file", ->
