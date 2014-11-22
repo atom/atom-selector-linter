@@ -236,13 +236,13 @@ describe "SelectorLinter", ->
     it "deprecates selectors using the overlay class", ->
       expectDeprecation(
         ".overlay",
-        "Use the selector `atom-panel[location=\"modal\"]` instead of the `overlay` class."
+        "Use the selector `atom-panel.modal` instead of the `overlay` class."
       )
 
     it "deprecates selectors using old panel classes", ->
       expectDeprecation(
         ".panel-top",
-        "Use the selector `atom-panel[location=\"top\"]` instead of the `panel-top` class."
+        "Use the selector `atom-panel.top` instead of the `panel-top` class."
       )
 
     it "deprecates the mini class on editors", ->
