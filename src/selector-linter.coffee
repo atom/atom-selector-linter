@@ -5,7 +5,7 @@ path = require "path"
 CLASS_TO_TAG =
   "workspace": "atom-workspace"
   "pane": "atom-pane"
-  "pane-container": "atom-pane-container"
+  "panes": "atom-pane-container"
   "text-editor": "atom-text-editor"
   "tool-panel": "atom-panel"
 

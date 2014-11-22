@@ -264,7 +264,7 @@ describe "SelectorLinter", ->
         packageName: "the-other-package"
         sourcePath: "menus/the-menu.cson"
       })
-      linter.check(".pane-container", {
+      linter.check(".panes", {
         packageName: "the-other-package"
         sourcePath: "menus/the-menu.cson"
       })
@@ -287,7 +287,7 @@ describe "SelectorLinter", ->
               message: "Use the `atom-pane` tag instead of the `pane` class."
             },
             {
-              message: "Use the `atom-pane-container` tag instead of the `pane-container` class."
+              message: "Use the `atom-pane-container` tag instead of the `panes` class."
             }
           ]
 
