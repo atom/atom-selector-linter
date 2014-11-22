@@ -245,6 +245,12 @@ describe "SelectorLinter", ->
         "Use the selector `atom-panel.top` instead of the `panel-top` class."
       )
 
+    it "deprecates selectors using the `panes` class", ->
+      expectDeprecation(
+        ".panes",
+        "Use the `atom-pane-container` tag instead of the `panes` class."
+      )
+
     it "deprecates the mini class on editors", ->
       expectDeprecation(
         ".editor.mini",
