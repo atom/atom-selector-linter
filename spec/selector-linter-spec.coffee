@@ -251,6 +251,16 @@ describe "SelectorLinter", ->
         "Use the `atom-pane-container` tag instead of the `panes` class."
       )
 
+    it "deprecates selectors using the `pane-row` and `pane-column` classes", ->
+      expectDeprecation(
+        ".pane-row",
+        "Use the selector `atom-pane-axis.horizontal` instead of the `pane-row` class."
+      )
+      expectDeprecation(
+        ".pane-column",
+        "Use the selector `atom-pane-axis.vertical` instead of the `pane-column` class."
+      )
+
     it "deprecates the mini class on editors", ->
       expectDeprecation(
         ".editor.mini",

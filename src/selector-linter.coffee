@@ -15,6 +15,8 @@ CLASS_TO_SELECTOR =
   "panel-left": "atom-panel.left"
   "panel-right": "atom-panel.right"
   "panel-bottom": "atom-panel.bottom"
+  "pane-row": "atom-pane-axis.horizontal"
+  "pane-column": "atom-pane-axis.vertical"
 
 module.exports =
 class SelectorLinter
