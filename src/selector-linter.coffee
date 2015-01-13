@@ -8,6 +8,8 @@ CLASS_TO_TAG =
   "panes": "atom-pane-container"
   "text-editor": "atom-text-editor"
   "tool-panel": "atom-panel"
+  "tab-bar": "tabs-bar"
+  "tab": "tabs-tab"
 
 CLASS_TO_SELECTOR =
   "overlay": "atom-panel.modal"
