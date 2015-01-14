@@ -277,18 +277,6 @@ describe "SelectorLinter", ->
         "Use the selector `atom-text-editor[mini]` to select mini-editors."
       )
 
-    it "deprecates the tab class", ->
-      expectDeprecation(
-        ".tab",
-        "Use the `tabs-tab` tag instead of the `tab` class."
-      )
-
-    it "deprecates the tab-bar class", ->
-      expectDeprecation(
-        ".tab-bar",
-        "Use the `tabs-bar` tag instead of the `tab-bar` class."
-      )
-
     it "groups deprecations by package and source file", ->
       linter.check(".workspace", {
         packageName: "the-package"
