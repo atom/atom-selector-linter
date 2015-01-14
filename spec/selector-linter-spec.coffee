@@ -206,17 +206,19 @@ describe "SelectorLinter", ->
         "Target the selector `:host, atom-text-editor` instead of `.editor-colors` for shadow DOM support."
       )
 
-    it "doesn't log a deprecation if the :host selector is in use in the stylesheet", ->
+    it "doesn't suggest using the :host selector if it is already used, but does suggest replacing the 'editor' class with the 'atom-text-editor' element", ->
       linter.checkSyntaxStylesheet("""
-        atom-text-editor span, :host span {
+        .editor span, :host span {
           color: black;
         }
       """, {
         packageName: "the-package",
         sourcePath: "index.less"
       })
-
-      expect(linter.getDeprecations()).toEqual({})
+      expectDeprecation(
+        ".editor, :host",
+        "Use the `atom-text-editor` tag instead of the `editor` class."
+      )
 
   describe "::check(selector, metadata)", ->
     expectDeprecation = (selector, message) ->
