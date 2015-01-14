@@ -58,7 +58,11 @@ describe "SelectorLinter", ->
         linter.checkPackage(fakePackage)
         expect(linter.getDeprecations()["the-package"]["index.less"]).toEqual [
           {
-            message: "Target the `:host` psuedo-selector in addition to the `editor` class for forward-compatibility",
+            message : 'Use the `atom-text-editor` tag instead of the `editor` class.'
+            packagePath : '/path/to/package',
+          }
+          {
+            message: "Target the selector `:host, atom-text-editor` instead of `.editor` for shadow DOM support.",
             packagePath: "/path/to/package"
           }
         ]
@@ -69,7 +73,7 @@ describe "SelectorLinter", ->
 
       it "checks its stylesheets as UI stylesheets", ->
         linter.checkPackage(fakePackage)
-        expect(linter.getDeprecations()["the-package"]["index.less"][0].message).toMatch(/atom-text-editor::shadow/)
+        expect(linter.getDeprecations()["the-package"]["index.less"][1].message).toMatch(/atom-text-editor::shadow/)
 
       it "checks stylesheets with the editor context as syntax stylesheets", ->
         fakePackage.stylesheets.push([
@@ -81,8 +85,12 @@ describe "SelectorLinter", ->
 
         expect(linter.getDeprecations()["the-package"]["stylesheets/the-stylesheet.atom-text-editor.less"]).toEqual [
           {
-            message: "Target the `:host` psuedo-selector in addition to the `editor` class for forward-compatibility",
-            packagePath: "/path/to/package"
+            message: 'Use the `atom-text-editor` tag instead of the `editor` class.'
+            packagePath: '/path/to/package',
+          }
+          {
+            message: 'Target the selector `:host, atom-text-editor` instead of `.editor` for shadow DOM support.'
+            packagePath : '/path/to/package',
           }
         ]
 
@@ -106,7 +114,7 @@ describe "SelectorLinter", ->
     it "records deprecations in the menu's context menu", ->
       linter.checkMenu({
         "context-menu":
-          ".text-editor":
+          ".editor":
             "The Command": "the-namespace:the-command"
       }, {
         packageName: "the-package"
@@ -116,7 +124,7 @@ describe "SelectorLinter", ->
       expect(linter.getDeprecations()).toEqual
         "the-package":
           "keymaps/the-keymap.cson": [{
-            message: "Use the `atom-text-editor` tag instead of the `text-editor` class."
+            message: "Use the `atom-text-editor` tag instead of the `editor` class."
           }]
 
   describe "::checkUIStylesheet(css, metadata)", ->
@@ -143,7 +151,7 @@ describe "SelectorLinter", ->
         """
       )
       expectDeprecation(
-        ".text-editor .cursor { background-color: #aaa; }",
+        ".editor .cursor { background-color: #aaa; }",
         """
           Style elements within text editors using the `atom-text-editor::shadow` selector or the `.atom-text-editor.less` file extension.
           If you want to target overlay elements, target them directly or as descendants of `atom-overlay` elements.
@@ -191,16 +199,16 @@ describe "SelectorLinter", ->
     it "suggests using the :host psuedo-selector", ->
       expectDeprecation(
         ".editor .cursor",
-        "Target the `:host` psuedo-selector in addition to the `editor` class for forward-compatibility"
+        "Target the selector `:host, atom-text-editor` instead of `.editor` for shadow DOM support."
       )
       expectDeprecation(
         ".editor-colors .cursor",
-        "Target the `:host` psuedo-selector in addition to the `editor-colors` class for forward-compatibility"
+        "Target the selector `:host, atom-text-editor` instead of `.editor-colors` for shadow DOM support."
       )
 
     it "doesn't log a deprecation if the :host selector is in use in the stylesheet", ->
       linter.checkSyntaxStylesheet("""
-        .editor span, :host span {
+        atom-text-editor span, :host span {
           color: black;
         }
       """, {
@@ -284,7 +292,7 @@ describe "SelectorLinter", ->
         packageName: "the-package"
         sourcePath: "stylesheets/the-stylesheet.less"
       })
-      linter.check(".text-editor", {
+      linter.check(".editor", {
         packageName: "the-package"
         sourcePath: "keymaps/the-keymap.cson"
       })
@@ -306,7 +314,7 @@ describe "SelectorLinter", ->
           ]
           "keymaps/the-keymap.cson": [
             {
-              message: "Use the `atom-text-editor` tag instead of the `text-editor` class."
+              message: "Use the `atom-text-editor` tag instead of the `editor` class."
             }
           ]
         "the-other-package":

@@ -6,7 +6,7 @@ CLASS_TO_TAG =
   "workspace": "atom-workspace"
   "pane": "atom-pane"
   "panes": "atom-pane-container"
-  "text-editor": "atom-text-editor"
+  "editor": "atom-text-editor"
   "tool-panel": "atom-panel"
   "tab-bar": "tabs-bar"
   "tab": "tabs-tab"
@@ -61,9 +61,9 @@ class SelectorLinter
       hostSelectorUsed ||= selectorHasPsuedoClass(selector, "host")
     unless hostSelectorUsed
       if editorClassUsed
-        @addDeprecation(metadata, "Target the `:host` psuedo-selector in addition to the `editor` class for forward-compatibility")
+        @addDeprecation(metadata, "Target the selector `:host, atom-text-editor` instead of `.editor` for shadow DOM support.")
       if editorColorsClassUsed
-        @addDeprecation(metadata, "Target the `:host` psuedo-selector in addition to the `editor-colors` class for forward-compatibility")
+        @addDeprecation(metadata, "Target the selector `:host, atom-text-editor` instead of `.editor-colors` for shadow DOM support.")
 
   checkMenu: (menu, metadata) ->
     for selector of menu['context-menu']
