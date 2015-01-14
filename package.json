@@ -1,6 +1,6 @@
 {
   "name": "atom-selector-linter",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A tool for finding deprecated selectors in atom packages",
   "main": "./lib/selector-linter",
   "scripts": {
