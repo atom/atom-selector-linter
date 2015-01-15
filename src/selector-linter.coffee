@@ -7,7 +7,6 @@ CLASS_TO_TAG =
   "pane": "atom-pane"
   "panes": "atom-pane-container"
   "editor": "atom-text-editor"
-  "tool-panel": "atom-panel"
 
 CLASS_TO_SELECTOR =
   "pane-row": "atom-pane-axis.horizontal"
@@ -19,6 +18,7 @@ CLASS_TO_SELECTOR_WITH_BACKWARD_COMPATIBILITY =
   "panel-left": "atom-panel.left"
   "panel-right": "atom-panel.right"
   "panel-bottom": "atom-panel.bottom"
+  "tool-panel": "atom-panel"
 
 module.exports =
 class SelectorLinter
