@@ -151,7 +151,7 @@ describe "SelectorLinter", ->
         """
       )
       expectDeprecation(
-        ".editor .cursor { background-color: #aaa; }",
+        ".editor-colors .cursor { background-color: #aaa; }",
         """
           Style elements within text editors using the `atom-text-editor::shadow` selector or the `.atom-text-editor.less` file extension.
           If you want to target overlay elements, target them directly or as descendants of `atom-overlay` elements.
@@ -178,7 +178,7 @@ describe "SelectorLinter", ->
 
     it "doesn't suggest ::shadow unless children of the editor are being targeted", ->
       linter.checkUIStylesheet("""
-        .editor-colors {
+        atom-text-editor {
           color: black;
         }
       """, {
@@ -277,6 +277,16 @@ describe "SelectorLinter", ->
       expectDeprecation(
         ".overlay",
         "Use the selector `atom-panel.modal` instead of the `overlay` class."
+      )
+
+    it "deprecates the old editor classes", ->
+      expectDeprecation(
+        ".editor",
+        "Use the `atom-text-editor` tag instead of the `editor` class."
+      )
+      expectDeprecation(
+        ".editor-colors",
+        "Use the `atom-text-editor` tag instead of the `editor-colors` class."
       )
 
     it "deprecates selectors using old panel classes", ->

@@ -7,6 +7,7 @@ CLASS_TO_TAG =
   "pane": "atom-pane"
   "panes": "atom-pane-container"
   "editor": "atom-text-editor"
+  "editor-colors": "atom-text-editor"
 
 CLASS_TO_SELECTOR =
   "pane-row": "atom-pane-axis.horizontal"
