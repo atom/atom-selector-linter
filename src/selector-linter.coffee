@@ -10,13 +10,15 @@ CLASS_TO_TAG =
   "tool-panel": "atom-panel"
 
 CLASS_TO_SELECTOR =
+  "pane-row": "atom-pane-axis.horizontal"
+  "pane-column": "atom-pane-axis.vertical"
+
+CLASS_TO_SELECTOR_WITH_BACKWARD_COMPATIBILITY =
   "overlay": "atom-panel.modal"
   "panel-top": "atom-panel.top"
   "panel-left": "atom-panel.left"
   "panel-right": "atom-panel.right"
   "panel-bottom": "atom-panel.bottom"
-  "pane-row": "atom-pane-axis.horizontal"
-  "pane-column": "atom-pane-axis.vertical"
 
 module.exports =
 class SelectorLinter
@@ -40,10 +42,23 @@ class SelectorLinter
 
   checkUIStylesheet: (css, metadata) ->
     shadowSelectorUsed = editorDescendentUsed = false
+
+    selectorsUsed = {}
+
     eachSelector css, (selector) =>
-      @check(selector, metadata)
+      @check(selector, metadata, true)
+
+      for klass, replacementSelector of CLASS_TO_SELECTOR_WITH_BACKWARD_COMPATIBILITY
+        selectorsUsed[klass] ||= selectorHasClass(selector, klass)
+        selectorsUsed[replacementSelector] ||= selector.indexOf(replacementSelector) >= 0
+
       editorDescendentUsed ||= /(\.text-editor|\.editor|atom-text-editor).*[ >].*\w/.test(selector)
       shadowSelectorUsed ||= selectorHasPsuedoClass(selector, ":shadow")
+
+    for klass, replacementSelector of CLASS_TO_SELECTOR_WITH_BACKWARD_COMPATIBILITY
+      if selectorsUsed[klass] and not selectorsUsed[replacementSelector]
+        @addDeprecation(metadata, "Use the selector `#{replacementSelector}` instead of the `#{klass}` class.")
+
     if editorDescendentUsed and not shadowSelectorUsed
       @addDeprecation(metadata, """
         Style elements within text editors using the `atom-text-editor::shadow` selector or the `.atom-text-editor.less` file extension.
@@ -67,7 +82,7 @@ class SelectorLinter
     for selector of menu['context-menu']
       @check(selector, metadata)
 
-  check: (selector, metadata) ->
+  check: (selector, metadata, skipBackwardCompatible=false) ->
     for klass, tag of CLASS_TO_TAG
       if selectorHasClass(selector, klass)
         @addDeprecation(metadata, "Use the `#{tag}` tag instead of the `#{klass}` class.")
@@ -75,6 +90,11 @@ class SelectorLinter
     for klass, replacement of CLASS_TO_SELECTOR
       if selectorHasClass(selector, klass)
         @addDeprecation(metadata, "Use the selector `#{replacement}` instead of the `#{klass}` class.")
+
+    unless skipBackwardCompatible
+      for klass, replacement of CLASS_TO_SELECTOR_WITH_BACKWARD_COMPATIBILITY
+        if selectorHasClass(selector, klass)
+          @addDeprecation(metadata, "Use the selector `#{replacement}` instead of the `#{klass}` class.")
 
     if selectorHasClass(selector, "editor") and selectorHasClass(selector, "mini")
       @addDeprecation(metadata, "Use the selector `atom-text-editor[mini]` to select mini-editors.")

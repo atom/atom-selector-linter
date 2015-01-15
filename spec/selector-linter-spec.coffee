@@ -187,6 +187,36 @@ describe "SelectorLinter", ->
       })
       expect(linter.getDeprecations()).toEqual({})
 
+    it "only warns about '.overlay' if 'atom-panel.modal' isn't present in the style sheet", ->
+      linter.checkUIStylesheet("""
+        .overlay {
+          color: black;
+        }
+      """, {
+        packageName: "the-package",
+        sourcePath: "index.less"
+      })
+      expect(linter.getDeprecations()).toEqual
+        "the-package":
+          "index.less": [
+            message: "Use the selector `atom-panel.modal` instead of the `overlay` class."
+          ]
+
+      linter.clearDeprecations()
+      linter.checkUIStylesheet("""
+        .overlay {
+          color: black;
+        }
+
+        atom-panel.modal {
+          color: gray;
+        }
+      """, {
+        packageName: "the-package",
+        sourcePath: "index.less"
+      })
+      expect(linter.getDeprecations()).toEqual({})
+
   describe "::checkSyntaxStylesheet(css, metadata)", ->
     expectDeprecation = (css, message) ->
       linter.clearDeprecations()
