@@ -21,6 +21,8 @@ CLASS_TO_SELECTOR_WITH_BACKWARD_COMPATIBILITY =
   "panel-bottom": "atom-panel.bottom"
   "tool-panel": "atom-panel"
 
+EDITOR_DESCENDENT_PATTERN = /(\.text-editor|\.editor|\.editor-colors|atom-text-editor)([:.][^ ]+)?[ >].*\w/
+
 module.exports =
 class SelectorLinter
   constructor: ->
@@ -53,7 +55,7 @@ class SelectorLinter
         selectorsUsed[klass] ||= selectorHasClass(selector, klass)
         selectorsUsed[replacementSelector] ||= selector.indexOf(replacementSelector) >= 0
 
-      editorDescendentUsed ||= /(\.text-editor|\.editor|atom-text-editor).*[ >].*\w/.test(selector)
+      editorDescendentUsed ||= EDITOR_DESCENDENT_PATTERN.test(selector)
       shadowSelectorUsed ||= selectorHasPsuedoClass(selector, ":shadow")
 
     for klass, replacementSelector of CLASS_TO_SELECTOR_WITH_BACKWARD_COMPATIBILITY

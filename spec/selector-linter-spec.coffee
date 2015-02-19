@@ -136,6 +136,14 @@ describe "SelectorLinter", ->
       })
       expect(linter.getDeprecations()["the-package"]["index.less"]).toContain({message})
 
+    expectNoDeprecations = (css) ->
+      linter.clearDeprecations()
+      linter.checkUIStylesheet(css, {
+        packageName: "the-package",
+        sourcePath: "index.less"
+      })
+      expect(linter.getDeprecations()).toEqual []
+
     it "records deprecations in the CSS", ->
       expectDeprecation(
         ".workspace { color: blue; }"
@@ -143,6 +151,10 @@ describe "SelectorLinter", ->
       )
 
     it "suggests using the shadow DOM psuedo selectors or the context stylesheet", ->
+      expectNoDeprecations(".editor-stats .cursor { color: blue; }")
+      expectNoDeprecations(".editor-colors-hey .cursor { color: blue; }")
+      expectNoDeprecations("atom-text-editor-hi .cursor { color: blue; }")
+
       expectDeprecation(
         ".editor .cursor { background-color: #aaa; }",
         """
