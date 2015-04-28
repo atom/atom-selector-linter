@@ -29,12 +29,12 @@ class SelectorLinter
     @deprecations = {}
 
   checkPackage: (pkg) ->
-    for [sourcePath, menu] in pkg.menus
+    for [sourcePath, menu] in pkg.menus ? []
       @checkMenu(menu, @packageMetadata(pkg, sourcePath))
-    for [sourcePath, keymap] in pkg.keymaps
+    for [sourcePath, keymap] in pkg.keymaps ? []
       @checkKeymap(keymap, @packageMetadata(pkg, sourcePath))
-    for [sourcePath, stylesheet] in pkg.stylesheets
-      if pkg.metadata["theme"] is "syntax" or /atom-text-editor\.(less|css)/.test(sourcePath)
+    for [sourcePath, stylesheet] in pkg.stylesheets ? []
+      if pkg.metadata.theme is "syntax" or /atom-text-editor\.(less|css)/.test(sourcePath)
         @checkSyntaxStylesheet(stylesheet, @packageMetadata(pkg, sourcePath))
       else
         @checkUIStylesheet(stylesheet, @packageMetadata(pkg, sourcePath))

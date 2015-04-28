@@ -94,6 +94,17 @@ describe "SelectorLinter", ->
           }
         ]
 
+    describe "when the package is missing menus, keymaps, or stylesheets", ->
+      it "does not throw an error", ->
+        fakePackage =
+          name: "the-package"
+          path: "/path/to/package"
+          metadata: {}
+
+        linter.checkPackage(fakePackage)
+
+        expect(linter.getDeprecations()).toEqual {}
+
   describe "::checkKeymap(keymap, metadata)", ->
     it "records deprecations in the keymap", ->
       linter.checkKeymap({
