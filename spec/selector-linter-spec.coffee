@@ -153,7 +153,7 @@ describe "SelectorLinter", ->
         packageName: "the-package",
         sourcePath: "index.less"
       })
-      expect(linter.getDeprecations()).toEqual []
+      expect(linter.getDeprecations()).toEqual({})
 
     it "records deprecations in the CSS", ->
       expectDeprecation(
